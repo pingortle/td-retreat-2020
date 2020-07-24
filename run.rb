@@ -9,6 +9,8 @@ GameClient.configure do |config|
 end
 
 class MovesPlayer
+  include Curses
+
   def initialize(api)
     @api = api
   end
@@ -30,7 +32,7 @@ class MovesPlayer
 
     result.opponents.each do |opponent|
       Curses.setpos(opponent.y + 10, opponent.x)
-      char = opponent.has_peg ? "o" : "ø"
+      char = opponent.has_peg ? "O" : "o"
       char = "F" if opponent.has_flag
       Curses.addch(char)
     end
@@ -41,6 +43,9 @@ mover = MovesPlayer.new(GameClient::GameApi.new)
 
 Curses.noecho # do not show typed keys
 Curses.init_screen
+# Curses.start_color
+# Curses.init_pair(Curses::COLOR_BLUE, Curses::COLOR_BLUE, Curses::COLOR_WHITE)
+# Curses.init_pair(Curses::COLOR_RED, Curses::COLOR_RED, Curses::COLOR_WHITE)
 Curses.stdscr.keypad(true) # enable arrow keys (required for pageup/down)
 
 loop do
