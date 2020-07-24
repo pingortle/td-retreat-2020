@@ -27,8 +27,11 @@ class MovesPlayer
     Curses.addstr("Moved #{result}")
 
     player = result.player
+    char = player.has_peg ? "X" : "x"
+    char = "!" unless player.is_in_safe_zone
+    char = "$" if player.has_flag
     Curses.setpos(player.y + 10, player.x)
-    Curses.addch("x")
+    Curses.addch(char)
 
     result.opponents.each do |opponent|
       Curses.setpos(opponent.y + 10, opponent.x)
