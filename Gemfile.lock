@@ -1,0 +1,28 @@
+GIT
+  remote: https://github.com/danthompson/capture-the-flag-client-rb.git
+  revision: 54687a27c4afd7a2e64653ad3af3c8c2d804b1eb
+  specs:
+    game-client (1.0.0)
+      json (~> 2.1, >= 2.1.0)
+      typhoeus (~> 1.0, >= 1.0.1)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+    curses (1.3.2)
+    ethon (0.12.0)
+      ffi (>= 1.3.0)
+    ffi (1.13.1)
+    json (2.3.1)
+    typhoeus (1.4.0)
+      ethon (>= 0.9.0)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  curses
+  game-client!
+
+BUNDLED WITH
+   2.1.4
