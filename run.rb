@@ -1,14 +1,32 @@
-require 'curses'
+require "curses"
 require "game-client"
 
 # Setup authorization
 GameClient.configure do |config|
   # Configure Bearer authorization: token
   config.host = "http://td-capture-the-flag.herokuapp.com" # https://example.com
-  config.access_token = "kaleb@testdouble.com" # alice@example.com
+  config.access_token = ENV.fetch("CTF_ACCESS_TOKEN", "kaleb@testdouble.com") # # alice@example.com
 end
 
-api_instance = GameClient::GameApi.new
+class MovesPlayer
+  def initialize(api)
+    @api = api
+  end
+
+  def move!(direction)
+    Curses.clear
+    Curses.setpos(0, 0)
+    Curses.addstr("Moving…")
+
+    result = @api.post_moves(direction)
+
+    Curses.clear
+    Curses.setpos(0, 0)
+    Curses.addstr("Moved #{result}")
+  end
+end
+
+mover = MovesPlayer.new(GameClient::GameApi.new)
 
 Curses.noecho # do not show typed keys
 Curses.init_screen
@@ -17,23 +35,16 @@ Curses.stdscr.keypad(true) # enable arrow keys (required for pageup/down)
 loop do
   case Curses.getch
   when Curses::Key::LEFT
-    api_instance.post_moves("west")
+    mover.move!("west")
   when Curses::Key::RIGHT
-    api_instance.post_moves("east")
+    mover.move!("east")
   when Curses::Key::UP
-    api_instance.post_moves("north")
+    mover.move!("north")
   when Curses::Key::DOWN
-    api_instance.post_moves("south")
+    mover.move!("south")
   end
 
 rescue GameClient::ApiError => e
-  puts "Exception when calling GameApi->get_player: #{e}"
+  Curses.setpos(0, 0)
+  Curses.addstr("Exception when calling GameApi->get_player: #{e}")
 end
-
-# begin
-#   # Get Player
-#   result = api_instance.get_player
-#   pp result
-# rescue GameClient::ApiError => e
-#   puts "Exception when calling GameApi->get_player: #{e}"
-# end
