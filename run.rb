@@ -1,27 +1,8 @@
 require "curses"
 require "game-client"
 
-# Setup authorization
-GameClient.configure do |config|
-  # Configure Bearer authorization: token
-  config.host = "http://td-capture-the-flag.herokuapp.com" # https://example.com
-  config.access_token = ENV.fetch("CTF_ACCESS_TOKEN", "kaleb@testdouble.com") # # alice@example.com
-end
-
-class MovesPlayer
-  include Curses
-
-  def initialize(api)
-    @api = api
-  end
-
-  def move!(direction)
-    Curses.clear
-    Curses.setpos(0, 0)
-    Curses.addstr("Moving…")
-
-    result = @api.post_moves(direction)
-
+class DrawsResult
+  def draw(result)
     Curses.clear
     Curses.setpos(0, 0)
     Curses.addstr("Moved #{result}")
@@ -42,14 +23,33 @@ class MovesPlayer
   end
 end
 
-mover = MovesPlayer.new(GameClient::GameApi.new)
+class MovesPlayer
+  include Curses
+
+  attr_reader :api
+
+  def initialize(api)
+    @api = api
+  end
+
+  def move!(direction)
+    DrawsResult.new.draw(@api.post_moves(direction))
+  end
+end
+
+GameClient.configure do |config|
+  config.host = "http://td-capture-the-flag.herokuapp.com"
+  config.access_token = ENV.fetch("CTF_ACCESS_TOKEN", "kaleb@testdouble.com")
+end
 
 Curses.noecho # do not show typed keys
 Curses.init_screen
-# Curses.start_color
-# Curses.init_pair(Curses::COLOR_BLUE, Curses::COLOR_BLUE, Curses::COLOR_WHITE)
-# Curses.init_pair(Curses::COLOR_RED, Curses::COLOR_RED, Curses::COLOR_WHITE)
 Curses.stdscr.keypad(true) # enable arrow keys (required for pageup/down)
+
+api = GameClient::GameApi.new
+mover = MovesPlayer.new(api)
+
+DrawsResult.new.draw(api.get_player)
 
 loop do
   case Curses.getch
