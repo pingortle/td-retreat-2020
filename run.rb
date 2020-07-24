@@ -23,6 +23,17 @@ class MovesPlayer
     Curses.clear
     Curses.setpos(0, 0)
     Curses.addstr("Moved #{result}")
+
+    player = result.player
+    Curses.setpos(player.y + 10, player.x)
+    Curses.addch("x")
+
+    result.opponents.each do |opponent|
+      Curses.setpos(opponent.y + 10, opponent.x)
+      char = opponent.has_peg ? "o" : "ø"
+      char = "F" if opponent.has_flag
+      Curses.addch(char)
+    end
   end
 end
 
